@@ -1,3 +1,5 @@
+love = lutro
+
 require("table-save")
 require("player")
 require("cloud")
@@ -10,7 +12,12 @@ require("menu")
 
 WIDTH = 300
 HEIGHT = 100
-SCALE = 3
+SCALE = 1
+
+function love.conf(t)
+	t.width = WIDTH
+	t.height = HEIGHT
+end
 
 bgcolor = {236,243,201,255}
 darkcolor = {2,9,4,255}
@@ -72,6 +79,36 @@ function restart()
 end
 
 function love.update(dt)
+
+	local JOY_LEFT = love.input.joypad(love.input.JOY_LEFT)
+	local JOY_RIGHT = love.input.joypad(love.input.JOY_RIGHT)
+	local JOY_DOWN = love.input.joypad(love.input.JOY_DOWN)
+	local JOY_UP = love.input.joypad(love.input.JOY_UP)
+	local JOY_START = love.input.joypad(love.input.JOY_START)
+	local JOY_B = love.input.joypad(love.input.JOY_B)
+
+	if JOY_B == 1 then
+		restart()
+	end
+	if JOY_UP == 1 then
+		selection = selection-1
+	end
+	if JOY_DOWN == 1 then
+		selection = selection+1
+	end
+
+	if JOY_START == 1 then
+		if gamestate == 1 then
+			if submenu == 0 then -- splash screen
+				submenu = 2 -- Jumps straight to difficulty.
+			elseif submenu == 2 then  -- difficulty selection
+				difficulty = selection+1
+				gamestate = 0
+				restart()
+			end
+		end
+	end
+
 	if gamestate == 0 then
 		updateGame(dt)
 	elseif gamestate == 1 then
@@ -163,6 +200,7 @@ function updateGame(dt)
 end
 
 function love.draw()
+	love.graphics.clear()
 	love.graphics.scale(SCALE,SCALE)
 	love.graphics.setColor(255,255,255,255)
 	if gamestate == 0 then
@@ -175,7 +213,8 @@ end
 function drawGame()
 	-- Shake camera if hit
 	if scrn_shake > 0 then
-		love.graphics.translate(5*(math.random()-0.5),5*(math.random()-0.5))
+		love.graphics.camera_x = 5*(math.random()-0.5)
+		love.graphics.camera_y = 5*(math.random()-0.5)
 	end
 
 	-- Draw terrain (skyscrapers etc.)
@@ -216,13 +255,13 @@ function drawGame()
 
 	-- Draw game over message
 	if pl.alive == false then
-		love.graphics.printf("you didn't make it to work\npress r to retry",0,30,WIDTH,"center")
-		love.graphics.printf("your score: ".. score .. " - highscore: " .. highscore[difficulty],0,65,WIDTH,"center")
+		love.graphics.print("you didn't make it to work\npress r to retry",0,30)
+		love.graphics.print("your score: ".. score .. " - highscore: " .. highscore[difficulty],0,65)
 	end
 
 	-- Draw pause message
 	if pause == true then
-		love.graphics.printf("paused\npress p to continue",0,50,WIDTH,"center")
+		love.graphics.print("paused\npress p to continue",0,50)
 	end
 
 	-- Draw coffee meter
@@ -232,73 +271,10 @@ function drawGame()
 	end
 end
 
-function love.keypressed(key,unicode)
-	if key == ' ' then -- will be space most of the time
-		return         -- avoid unnecessary checks
-	elseif key == 'r' then
-		restart()
-	elseif key == 'up' then
-		selection = selection-1
-	elseif key == 'down' then
-		selection = selection+1
-
-	elseif key == 'return' then
-		if gamestate == 1 then
-			if submenu == 0 then -- splash screen
-				submenu = 2 -- Jumps straight to difficulty.
-				auSelect:stop() auSelect:play()
-			elseif submenu == 2 then  -- difficulty selection
-				difficulty = selection+1
-				auSelect:stop() auSelect:play()
-				gamestate = 0
-				restart()
-			end
-		end
-
-	elseif key == 'escape' then
-		if gamestate == 0 then -- ingame
-			gamestate = 1
-			submenu = 2
-			selection = 0
-		elseif gamestate == 1 then
-			if submenu == 0 then
-				love.event.quit()
-			elseif submenu == 2 then
-				submenu = 0
-			end
-		end
-		auSelect:stop() auSelect:play()
-	elseif key == 'p' then
-		if gamestate == 0 and pl.alive == true then
-			pause = not pause
-		end
-	elseif key == 'm' then
-		if mute == false then
-			mute = true
-			love.audio.setVolume(0.0)
-		else
-			mute = false
-			love.audio.setVolume(1.0)
-		end
-	elseif key == '1' or key == 'kp1' or key == 'f1' then
-		SCALE = 1
-		updateScale()
-	elseif key == '2' or key == 'kp2' or key == 'f2' then
-		SCALE = 2
-		updateScale()
-	elseif key == '3' or key == 'kp3' or key == 'f3' then
-		SCALE = 3
-		updateScale()
-	elseif key == '4' or key == 'kp4' or key == 'f4' then
-		SCALE = 4
-		updateScale()
-	end
-end
-
 function updateScale()
 	SCRNWIDTH = WIDTH*SCALE
 	SCRNHEIGHT = HEIGHT*SCALE
-	love.window.setMode(SCRNWIDTH,SCRNHEIGHT,{fullscreen=false})
+	--love.window.setMode(SCRNWIDTH,SCRNHEIGHT,{fullscreen=false})
 end
 
 function loadResources()
@@ -315,20 +291,17 @@ function loadResources()
 	imgSplash = love.graphics.newImage("gfx/splash.png")
 	imgSplash:setFilter("nearest","nearest")
 
-	fontimg = love.graphics.newImage("gfx/imgfont.png")
-	fontimg:setFilter("nearest","nearest")
-	imgfont = love.graphics.newImageFont(fontimg," abcdefghijklmnopqrstuvwxyz0123456789.!'-:*")
-	imgfont:setLineHeight(2)
+	imgfont = love.graphics.newImageFont("gfx/imgfont.png"," abcdefghijklmnopqrstuvwxyz0123456789.!'-:*")
 
 	-- Load sound effects
-	auCoffee = love.audio.newSource("sfx/coffee.wav","static")
-	auHit = love.audio.newSource("sfx/hit.wav","static")
-	auSelect = love.audio.newSource("sfx/select.wav","static")
+	auCoffee = love.audio.newSource("sfx/coffee.wav","stream")
+	auHit = love.audio.newSource("sfx/hit.wav","stream")
+	auSelect = love.audio.newSource("sfx/select.wav","stream")
 	if use_music == true then
 		auBGM = love.audio.newSource("sfx/bgm.ogg","stream")
 		auBGM:setLooping(true)
 		auBGM:setVolume(0.6)
-		auBGM:play()
+		--auBGM:play()
 	end
 end
 

@@ -32,8 +32,10 @@ function Player:reset()
 end
 
 function Player:update(dt)
+	local JOY_A = love.input.joypad(love.input.JOY_A)
+
 	-- Check keyboard input
-	if love.keyboard.isDown(' ') and self.onGround == true then
+	if JOY_A == 1 and self.onGround == true then
 		self.yspeed = JUMP_POWER
 		self.onGround = false
 	end
@@ -111,7 +113,6 @@ function Player:kill(status)
 
 	if status ~= 4 then
 		scrn_shake = 0.25
-		auHit:stop() auHit:play()
 	end
 
 	if coffee >= 5 then
@@ -171,7 +172,6 @@ function Player:collideWithTrain()
 			train.hasCoffee = false
 			coffee = coffee + 1
 			if coffee > 5 then coffee = 5 end
-			auCoffee:stop() auCoffee:play()
 		end
 	end
 end
