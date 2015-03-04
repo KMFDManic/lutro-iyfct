@@ -298,9 +298,9 @@ function loadResources()
 	auHit = love.audio.newSource("sfx/hit.wav","stream")
 	auSelect = love.audio.newSource("sfx/select.wav","stream")
 	if use_music == true then
-		auBGM = love.audio.newSource("sfx/bgm.ogg","stream")
-		auBGM:setLooping(true)
-		auBGM:setVolume(0.6)
+		--auBGM = love.audio.newSource("sfx/bgm.ogg","stream")
+		--auBGM:setLooping(true)
+		--auBGM:setVolume(0.6)
 		--auBGM:play()
 	end
 end
