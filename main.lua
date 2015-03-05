@@ -80,12 +80,12 @@ end
 
 function love.update(dt)
 
-	local JOY_LEFT = love.input.joypad(love.input.JOY_LEFT)
-	local JOY_RIGHT = love.input.joypad(love.input.JOY_RIGHT)
-	local JOY_DOWN = love.input.joypad(love.input.JOY_DOWN)
-	local JOY_UP = love.input.joypad(love.input.JOY_UP)
-	local JOY_START = love.input.joypad(love.input.JOY_START)
-	local JOY_B = love.input.joypad(love.input.JOY_B)
+	local JOY_LEFT = love.input.joypad("left")
+	local JOY_RIGHT = love.input.joypad("right")
+	local JOY_DOWN = love.input.joypad("down")
+	local JOY_UP = love.input.joypad("up")
+	local JOY_START = love.input.joypad("start")
+	local JOY_B = love.input.joypad("b")
 
 	if JOY_B == 1 then
 		restart()

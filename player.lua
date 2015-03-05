@@ -32,7 +32,7 @@ function Player:reset()
 end
 
 function Player:update(dt)
-	local JOY_A = love.input.joypad(love.input.JOY_A)
+	local JOY_A = love.input.joypad("a")
 
 	-- Check keyboard input
 	if JOY_A == 1 and self.onGround == true then
