@@ -255,13 +255,15 @@ function drawGame()
 
 	-- Draw game over message
 	if pl.alive == false then
-		love.graphics.print("you didn't make it to work\npress r to retry",0,30)
+		love.graphics.print("you didn't make it to work", 0, 30)
+      love.graphics.print("press start to retry",0, 45)
 		love.graphics.print("your score: ".. score .. " - highscore: " .. highscore[difficulty],0,65)
 	end
 
 	-- Draw pause message
 	if pause == true then
-		love.graphics.print("paused\npress p to continue",0,50)
+		love.graphics.print("paused",0,30)
+		love.graphics.print("press start to continue",0,45)
 	end
 
 	-- Draw coffee meter
