@@ -32,10 +32,8 @@ function Player:reset()
 end
 
 function Player:update(dt)
-	local JOY_A = love.input.joypad("a")
-
 	-- Check keyboard input
-	if JOY_A == 1 and self.onGround == true then
+	if love.input.joypad("a") and self.onGround == true then
 		self.yspeed = JUMP_POWER
 		self.onGround = false
 	end

@@ -79,36 +79,6 @@ function restart()
 end
 
 function love.update(dt)
-
-	local JOY_LEFT = love.input.joypad("left")
-	local JOY_RIGHT = love.input.joypad("right")
-	local JOY_DOWN = love.input.joypad("down")
-	local JOY_UP = love.input.joypad("up")
-	local JOY_START = love.input.joypad("start")
-	local JOY_B = love.input.joypad("b")
-
-	if JOY_B == 1 then
-		restart()
-	end
-	if JOY_UP == 1 then
-		selection = selection-1
-	end
-	if JOY_DOWN == 1 then
-		selection = selection+1
-	end
-
-	if JOY_START == 1 then
-		if gamestate == 1 then
-			if submenu == 0 then -- splash screen
-				submenu = 2 -- Jumps straight to difficulty.
-			elseif submenu == 2 then  -- difficulty selection
-				difficulty = selection+1
-				gamestate = 0
-				restart()
-			end
-		end
-	end
-
 	if gamestate == 0 then
 		updateGame(dt)
 	elseif gamestate == 1 then
@@ -256,7 +226,7 @@ function drawGame()
 	-- Draw game over message
 	if pl.alive == false then
 		love.graphics.printf("you didn't make it to work", 0, 30,WIDTH,"center")
-		love.graphics.printf("press B to retry",0, 45,WIDTH,"center")
+		love.graphics.printf("press b to retry",0, 45,WIDTH,"center")
 		love.graphics.printf("your score: ".. score .. " - highscore: " .. highscore[difficulty],0,65,WIDTH,"center")
 	end
 
@@ -273,10 +243,53 @@ function drawGame()
 	end
 end
 
+function love.gamepadpressed(i, key)
+	if key == 'a' then -- will be A most of the time
+		return          -- avoid unnecessary checks
+	elseif key == 'b' then
+		restart()
+	elseif key == 'up' then
+		selection = selection-1
+	elseif key == 'down' then
+		selection = selection+1
+
+	elseif key == 'start' then
+		if gamestate == 1 then
+			if submenu == 0 then -- splash screen
+				submenu = 2 -- Jumps straight to difficulty.
+				love.audio.play(auSelect)
+			elseif submenu == 2 then  -- difficulty selection
+				difficulty = selection+1
+				love.audio.play(auSelect)
+				gamestate = 0
+				restart()
+			end
+		end
+
+	elseif key == 'y' then
+		if gamestate == 0 then -- ingame
+			gamestate = 1
+			submenu = 2
+			selection = 0
+		elseif gamestate == 1 then
+			if submenu == 0 then
+				love.event.quit()
+			elseif submenu == 2 then
+				submenu = 0
+			end
+		end
+		love.audio.play(auSelect)
+	end
+end
+
+function love.gamepadreleased(i, k)
+	-- body
+end
+
 function updateScale()
 	SCRNWIDTH = WIDTH*SCALE
 	SCRNHEIGHT = HEIGHT*SCALE
-	--love.window.setMode(SCRNWIDTH,SCRNHEIGHT,{fullscreen=false})
+	love.window.setMode(SCRNWIDTH,SCRNHEIGHT,{fullscreen=false})
 end
 
 function loadResources()
