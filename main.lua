@@ -183,8 +183,7 @@ end
 function drawGame()
 	-- Shake camera if hit
 	if scrn_shake > 0 then
-		love.graphics.camera_x = 5*(math.random()-0.5)
-		love.graphics.camera_y = 5*(math.random()-0.5)
+		love.graphics.translate(5*(math.random()-0.5),5*(math.random()-0.5))
 	end
 
 	-- Draw terrain (skyscrapers etc.)
